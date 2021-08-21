@@ -20,7 +20,7 @@ class Icon:
             process_name = exe_path[exe_path.rfind('\\') + 1:-1].replace('.exe', '.bmp')
             save_path = os.path.join(os.getcwd(), 'icons', process_name)
 
-            if not os.path.isdir(os.path.join(os.getcwd(), 'icons', process_name)):
+            if not os.path.isdir(save_path):
                 subprocess.call(['powershell', '-executionpolicy', 'bypass', './icons.ps1', '-ExePath', exe_path, '-SavePath', save_path])
         except AttributeError:
             pass
