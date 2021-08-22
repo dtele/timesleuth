@@ -6,7 +6,7 @@ from psutil import Process, AccessDenied
 
 
 class ProcessDetails:
-    def __init__(self, pid, exe_name, title, exe_path):
+    def __init__(self, pid: int = 0, exe_name: str = '', title: str = '', exe_path: str = ''):
         self.pid = pid
         self.exe_name = exe_name
         self.title = title
@@ -15,19 +15,16 @@ class ProcessDetails:
         self.process_end = None
         self.runtime = None
 
-    def __eq__(self, other):
-        unique_self = {k: v for k, v in self.__dict__.items() if k not in ['pid', 'process_start', 'process_end', 'runtime']}
-        unique_other = {k: v for k, v in other.__dict__.items() if k not in ['pid', 'process_start', 'process_end', 'runtime']}
+    def __eq__(self, other) -> bool:
+        return (self.title, self.exe_path) == (other.title, other.exe_path)
 
-        return unique_self == unique_other
-
-    def __getitem__(self, item):
+    def __getitem__(self, item: str):
         return getattr(self, item)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<ProcessDetails pid={self.pid} exe_name=_{self.exe_name}_ title=_{self.title}_ runtime={self.runtime}>'
 
-    def isnone(self):
+    def isnone(self) -> bool:
         return self.pid == 0
 
 
@@ -52,7 +49,7 @@ class Listener:
 
             return ProcessDetails(pid.value, process.name(), ''.join(map(str, title))[:-1], process.exe())
         except AccessDenied:
-            pass
+            return ProcessDetails()
 
     def start(self) -> None:
         while True:
