@@ -1,6 +1,6 @@
 import sqlite3
 
-from process_listener import ProcessDetails
+from listener import ProcessDetails
 
 
 class Writer:
@@ -22,4 +22,3 @@ class Writer:
 
         self.cursor.execute('insert into activity(pid, title, exe_name, process_start, process_end) values (?, ?, ?, ?, ?)', vals)
         self.db.commit()
-        
