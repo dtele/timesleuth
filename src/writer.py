@@ -4,8 +4,8 @@ from process_listener import ProcessDetails
 
 
 class Writer:
-    def __init__(self):
-        self.db = sqlite3.connect('activitytracker.sqlite')
+    def __init__(self, db_name: str):
+        self.db = sqlite3.connect(db_name)
         self.cursor = self.db.cursor()
 
         try:
@@ -13,7 +13,7 @@ class Writer:
         except sqlite3.OperationalError:
             pass
 
-    def write(self, process_details: ProcessDetails):
+    def write(self, process_details: ProcessDetails) -> None:
         vals = (process_details.pid,
                 process_details.title,
                 process_details.exe_name,
