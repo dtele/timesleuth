@@ -1,24 +1,34 @@
 import sqlite3
 
 from listener import ProcessDetails
+from tracker import Tracker
 
 
 class Writer:
+    """
+    A class to create a database and input process details.
+    """
     def __init__(self, db_name: str):
+        """
+        :param db_name: name of database
+        """
         self.db = sqlite3.connect(db_name)
         self.cursor = self.db.cursor()
 
         try:
-            self.cursor.execute('create table activity(pid int, title varchar(256), exe_name varchar(256), process_start datetime(6), process_end datetime(6))')
+            self.cursor.execute('create table activity(title varchar(256), exe_path varchar(256), process_start datetime, process_end datetime)')
         except sqlite3.OperationalError:
             pass
 
     def write(self, process_details: ProcessDetails) -> None:
-        vals = (process_details.pid,
-                process_details.title,
-                process_details.exe_name,
+        """
+        Inputs process details in the table.
+        
+        :param process_details: Gets process details of the active process.
+        """
+        vals = (process_details.title,
+                process_details.exe_path,
                 process_details.process_start,
                 process_details.process_end)
-
-        self.cursor.execute('insert into activity(pid, title, exe_name, process_start, process_end) values (?, ?, ?, ?, ?)', vals)
+        self.cursor.execute('insert into activity(title, exe_path, process_start, process_end) values (?, ?, ?, ?)', vals)
         self.db.commit()
