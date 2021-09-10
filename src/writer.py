@@ -16,7 +16,7 @@ class Writer:
         self.cursor = self.db.cursor()
 
         try:
-            self.cursor.execute('create table activity(title varchar(256), exe_path varchar(256), process_start datetime, process_end datetime)')
+            self.cursor.execute('create table activity(title varchar(256), exe_path varchar(512), process_start datetime, process_end datetime)')
         except sqlite3.OperationalError:
             pass
 
