@@ -24,7 +24,7 @@ class Writer:
         """
         Inputs process details in the table.
         
-        :param process_details: ProcessDetails oject of active process
+        :param process_details: ProcessDetails object of active process
         """
         vals = (process_details.title,
                 process_details.exe_path,
