@@ -10,7 +10,7 @@ class Writer:
     """
     def __init__(self, db_name: str):
         """
-        :param db_name: name of database
+        :param db_name: relative path of database
         """
         self.db = sqlite3.connect(db_name)
         self.cursor = self.db.cursor()
@@ -24,7 +24,7 @@ class Writer:
         """
         Inputs process details in the table.
         
-        :param process_details: Gets process details of the active process.
+        :param process_details: ProcessDetails oject of active process
         """
         vals = (process_details.title,
                 process_details.exe_path,
