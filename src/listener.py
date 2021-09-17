@@ -1,6 +1,6 @@
 import time
 from ctypes import byref, c_ulong, create_unicode_buffer, windll
-from typing import Any, Callable, Tuple
+from typing import Any, Callable
 
 from psutil import Process, AccessDenied
 
