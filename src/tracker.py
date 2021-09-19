@@ -1,6 +1,6 @@
 import os
 import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Callable
 
 from listener import Listener, ProcessDetails
