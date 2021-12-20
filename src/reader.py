@@ -1,5 +1,5 @@
-import sqlite3
 import pandas as pd
+import sqlite3
 
 from datetime import datetime
 from typing import Tuple
