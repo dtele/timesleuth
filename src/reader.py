@@ -1,7 +1,8 @@
 import sqlite3
+import pandas as pd
 
-from datetime import datetime,timedelta
-from typing import List, Tuple
+from datetime import datetime
+from typing import Tuple
 
 from listener import ProcessDetails
 
@@ -32,34 +33,32 @@ class Reader:
 
         return process
 
-    @staticmethod
-    def get_runtime(data: List[ProcessDetails]) -> List[Tuple[str, timedelta]]:
-        """
-        Calculates total runtime of each unique process.
-
-        :param data: list of ProcessDetails objects converted from sql entries
-        :returns: list of unique processes and their total runtime
-        """
-        process_runtimes = {}
-
-        for elem in data:
-            if elem.exe_path in process_runtimes:
-                process_runtimes[elem.exe_path] += elem.runtime
-            else:
-                process_runtimes[elem.exe_path] = elem.runtime
-
-        return sorted(process_runtimes.items(), key=lambda i: i[1], reverse=True)
-
     def read_rows(self, date: datetime.date) -> List[ProcessDetails]:
         """
         Reads data from the database.
 
         :param date: lower range of timeframe to read entries from
-        :returns: list of ProcessDetails objects converted from sql table
+        :returns: pandas dataframe object of data converted from sql table
         """
         self.cursor.execute('select title, exe_path, process_start, process_end from activity where process_start > (?)', (date,))
         output = [Reader.to_process_details(i) for i in self.cursor.fetchall()]
 
         self.db.commit()
 
-        return output
+        output_dir={}
+        for i in output:
+            if i.exe_name not in output_dir:
+                output_dir[i.exe_name]=i.runtime
+            else:
+                output_dir[i.exe_name]+=i.runtime
+        
+        data=[[i.exe_name[:-4],
+               i.runtime.total_seconds(),
+               output_dir[i.exe_name].total_seconds()] for i in output]
+        
+        if max(data,key=lambda i:i[1])[1] > 3600:
+            data=[[i,j,k/60] for i,j,k in data]
+
+        df=pd.DataFrame(data,columns=['Processes','Runtime','Total_time'])
+        
+        return df
