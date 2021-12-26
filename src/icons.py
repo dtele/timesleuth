@@ -9,7 +9,7 @@ class Icon:
     def __init__(self, exe_path):
         self.exe_path = exe_path
         self.img_pil = self.get_pil_img()
-        self.dominant_color = self.dominant_color()
+        self.dominant_color = self.get_dominant_color()
 
     def get_pil_img(self) -> Image:
         img_base64 = subprocess.run(['powershell', '-executionpolicy', 'bypass', './icons.ps1', '-ExePath', rf'"{self.exe_path}"'], capture_output=True).stdout
