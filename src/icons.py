@@ -19,7 +19,7 @@ class Icon:
 
         return img_pil
 
-    def dominant_color(self) -> str:
+    def get_dominant_color(self) -> str:
         img_copy = self.img_pil.copy()
         pixels = img_copy.getcolors(2 ** 16)
         # remove transparent (a = 0) and black (sum(r, g, b) < 45) and white (sum(r, g, b) < 720) pixels
