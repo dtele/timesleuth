@@ -21,7 +21,8 @@ class Icon:
 
     def get_dominant_color(self) -> str:
         img_copy = self.img_pil.copy()
-        pixels = img_copy.getcolors(2 ** 16)
+        img_compressed = img_copy.quantize(colors=8, kmeans=3).convert('RGBA')
+        pixels = img_compressed.getcolors(2 ** 8)
         # remove transparent (a = 0) and black (sum(r, g, b) < 45) and white (sum(r, g, b) > 720) pixels
         pixels = [i for i in pixels if i[1][3] != 0 and 45 < sum(i[1][0:3]) < 720]
         dominant_rgb = max(pixels, key=lambda i: i[0])[1][0:3]
