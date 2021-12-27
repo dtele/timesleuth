@@ -26,6 +26,8 @@ class Icon:
 
         img_bmp.Save(mem_stream, Imaging.ImageFormat.Png)
         img_bytes = bytearray(mem_stream.ToArray())
+        mem_stream.Flush()
+        mem_stream.Dispose()
 
         img_file_object = io.BytesIO(img_bytes)
         img_pil = Image.open(img_file_object)
