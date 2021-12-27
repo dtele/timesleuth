@@ -91,7 +91,7 @@ class Reader:
                  output_dir[i.exe_path].total_seconds()] for i in output]
 
         if max(data, key=lambda i: i[1])[1] > 3600:
-            data = [[i, j, k / 60] for i, j, k in data]
+            data = [[i, j / 60, k / 60] for i, j, k in data]
 
         df = pd.DataFrame(data, columns=['exe_path', 'instance_time', 'runtime'])
         return df
