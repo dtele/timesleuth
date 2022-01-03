@@ -54,7 +54,7 @@ class Listener:
     """
     A class to get details about the active process.
     """
-    def __init__(self, callback_function: Callable[[ProcessDetails], Any], delay: int = 1_000):
+    def __init__(self, callback_function: Callable[[ProcessDetails], Any]):
         """
         :param callback_function: function to be called for the ProcessDetails object returned from get_window
         :param delay: delay between calls to get process in milliseconds
