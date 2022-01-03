@@ -4,24 +4,25 @@ import time
 from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.QtCore import pyqtSignal, QThread
 
-from qtd_gui import Ui_Form
-from listener import Listener
+from gui import Ui_Form
+from tracker import Tracker
 
 
 class StartToggle(QThread):
     def __init__(self):
         QThread.__init__(self)
         self.enabled = True
-        self.listener = Listener(print, 10)
+        self.delay = 10
+        # for debugging only, change callback later
+        self.tracker = Tracker(callback_function=lambda x: print(x.__dict__))
 
     def __del__(self):
         self.wait()
 
     def run(self):
         while self.enabled:
-            # add sql Writer stuff here
-            self.listener.listen()
-            time.sleep(self.listener.delay / 1_000)
+            self.tracker.check_window(self.tracker.get_window())
+            time.sleep(self.delay / 1_000)
 
     def stop(self):
         self.enabled = False
