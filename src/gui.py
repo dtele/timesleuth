@@ -6,6 +6,7 @@ from PyQt5.QtCore import pyqtSignal, QThread
 
 from qtd_gui import Ui_Form
 from tracker import Tracker
+from sql_commands import Writer
 
 
 class StartToggle(QThread):
@@ -13,8 +14,8 @@ class StartToggle(QThread):
         QThread.__init__(self)
         self.enabled = True
         self.delay = 10
-        # for debugging only, change callback later
-        self.tracker = Tracker(callback_function=lambda x: print(x.__dict__))
+        # change file name later
+        self.tracker = Tracker(callback_function=Writer(r'haskelldudes-main/src/dbname.sqlite').write)
 
     def __del__(self):
         self.wait()
