@@ -4,7 +4,7 @@ import time
 from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.QtCore import pyqtSignal, QThread
 
-from gui import Ui_Form
+from qtd_gui import Ui_Form
 from tracker import Tracker
 
 
