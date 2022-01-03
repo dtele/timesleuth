@@ -1,4 +1,3 @@
-import time
 from ctypes import byref, c_ulong, create_unicode_buffer, windll
 from typing import Any, Callable
 
@@ -85,10 +84,8 @@ class Listener:
         except AccessDenied:
             return ProcessDetails()
 
-    def start(self) -> None:
+    def listen(self) -> None:
         """
-        Continuously calls the callback function for the currently active process.
+        Calls the callback function for the currently active process.
         """
-        while True:
-            self.callback_function(self.get_window())
-            time.sleep(self.delay / 1_000)
+        self.callback_function(self.get_window())
