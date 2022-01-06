@@ -4,7 +4,7 @@ import sqlite3
 from datetime import datetime
 from typing import Tuple
 
-from listener import ProcessDetails
+from tracker import ProcessDetails
 
 
 class Writer:
@@ -16,7 +16,7 @@ class Writer:
         """
         :param db_name: relative path of database
         """
-        self.db = sqlite3.connect(db_name)
+        self.db = sqlite3.connect(db_name, check_same_thread=False)
         self.cursor = self.db.cursor()
 
         try:
@@ -49,7 +49,7 @@ class Reader:
         """
         :param db_name: relative path of database
         """
-        self.db = sqlite3.connect(db_name)
+        self.db = sqlite3.connect(db_name, check_same_thread=False)
         self.cursor = self.db.cursor()
 
     @staticmethod
@@ -87,11 +87,8 @@ class Reader:
                 output_dir[i.exe_path] += i.runtime
 
         data = [[i.exe_path,
-                 i.runtime.total_seconds(),
-                 output_dir[i.exe_path].total_seconds()] for i in output]
-
-        if max(data, key=lambda i: i[1])[1] > 3600:
-            data = [[i, j / 60, k / 60] for i, j, k in data]
+                 i.runtime.total_seconds() / 60,
+                 output_dir[i.exe_path].total_seconds() / 60] for i in output]
 
         df = pd.DataFrame(data, columns=['exe_path', 'instance_time', 'runtime'])
         return df
