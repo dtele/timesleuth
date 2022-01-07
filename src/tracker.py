@@ -9,6 +9,8 @@ class ProcessDetails:
     """
     A class to represent a process.
     """
+    __slots__ = ['pid', 'exe_name', 'title', 'exe_path', 'process_start', 'process_end', 'runtime']
+    
     def __init__(self, pid: int = 0, exe_name: str = '', title: str = '', exe_path: str = ''):
         """
         :param pid: process id
