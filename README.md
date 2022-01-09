@@ -18,10 +18,10 @@ Do any one of the following:
 ## Technologies used
 
 1. [WinAPI](https://docs.microsoft.com/en-us/windows/win32/api/): Active process detection
-2. [SQLite](https://sqlite.org/index.html/): Database management
+2. [SQLite](https://sqlite.org/): Database management
 3. [Qt Framework](https://doc.qt.io/): Graphical User Interface
 4. [Matplotlib](https://matplotlib.org/) and [Seaborn](https://seaborn.pydata.org/): Data visualization
-5. [.NET Platform](https://docs.microsoft.com/en-us/dotnet/api/system.drawing?view=net-6.0/): Icon extraction
+5. [.NET Platform](https://docs.microsoft.com/en-us/dotnet/api/?view=net-6.0): Icon extraction
 
 ## Credits
 
