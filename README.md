@@ -4,6 +4,8 @@ TimeSleuth is a software that detects and stores what a user does on their compu
 This data is stored in a database and is later visualized inside a graphical
 user interface with a graph.
 
+Made for a school project.
+
 ## Installation
 
 Do any one of the following:
