@@ -1,6 +1,6 @@
 # TimeSleuth
 
-TimeSleuth is a software that detects and stores what a user does on their computer.
+TimeSleuth is an application that detects and stores what a user does on their computer.
 This data is stored in a database and is later visualized inside a graphical
 user interface with a graph.
 
