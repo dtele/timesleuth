@@ -1,12 +1,14 @@
 import sys
 import time
 
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtCore import pyqtSignal, QThread
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5.QtCore import QThread, pyqtSignal
 
-from qtd_gui import Ui_Form
-from tracker import Tracker
+from qtd_gui import Ui_MainWindow
 from sql_commands import Writer
+from tracker import Tracker
 
 
 class StartToggle(QThread):
@@ -15,7 +17,8 @@ class StartToggle(QThread):
         self.enabled = True
         self.delay = 10
         # change file name later
-        self.tracker = Tracker(callback_function=Writer(r'haskelldudes-main/src/dbname.sqlite').write)
+        self.writer = Writer(r'dbname.sqlite')
+        self.tracker = Tracker(callback_function=self.writer.write)
 
     def __del__(self):
         self.wait()
@@ -38,9 +41,15 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.started = False
-        self.ui = Ui_Form()
-        self.ui.setupUi(self)
-        self.ui.btnstart.clicked.connect(self.on_click)
+        self.ui = Ui_MainWindow()
+        self.Form = QMainWindow()
+        self.ui.setupUi(self.Form)
+
+        self.fig = plt.figure()
+        self.canvas = FigureCanvasQTAgg(self.fig)
+        self.ui.graph_layout.addWidget(self.canvas)
+
+        self.ui.toggle_button.clicked.connect(self.on_click)
 
         self.thread = StartToggle()
         self.stop_signal.connect(self.thread.stop)
@@ -48,11 +57,11 @@ class MainWindow(QWidget):
     def on_click(self):
         self.started = not self.started
         if self.started:
-            self.ui.btnstart.setText('Stop')
+            self.ui.toggle_button.setText('Stop')
             self.thread.reset()
             self.thread.start()
         else:
-            self.ui.btnstart.setText('Start')
+            self.ui.toggle_button.setText('Start')
             self.stop_signal.emit()
 
 
@@ -60,6 +69,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     window = MainWindow()
-    window.show()
+    window.Form.show()
 
     sys.exit(app.exec_())
