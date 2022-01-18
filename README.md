@@ -27,5 +27,5 @@ Do any one of the following:
 
 - [dcsp3](https://github.com/dcsp3): Database Management
 - [dtele](https://github.com/dtele): Process Detection, Icon Extraction, GUI
-- [RoutesLOL](https://github.com/RoutesLOL): Graphical User Interface
+- [setuoR](https://github.com/setuoR): Graphical User Interface
 - [xyltius](https://github.com/xyltius): Data Visualization
