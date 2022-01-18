@@ -1,3 +1,4 @@
+```Monokai
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -169,3 +170,4 @@ class Ui_MainWindow(object):
         self.days_label.setText(_translate("MainWindow", "Days"))
         self.instances_checkbox.setText(_translate("MainWindow", "Show Instances"))
         self.icons_checkbox.setText(_translate("MainWindow", "Show Icons"))
+```
