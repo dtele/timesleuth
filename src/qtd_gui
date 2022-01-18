@@ -33,6 +33,9 @@ class Ui_MainWindow(object):
 "QCheckBox:checked{\n"
 "color:rgb(255,255,255);\n"
 "}\n"
+"QCheckBox:hover{\n"
+"color:rgb(255,255,255);\n"
+"}\n"
 "QVBoxLayout#graph_layout{\n"
 "border: 1px solid;\n"
 "}")
