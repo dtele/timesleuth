@@ -8,6 +8,9 @@ class Ui_MainWindow(object):
         MainWindow.resize(1000, 460)
         MainWindow.setMinimumSize(QtCore.QSize(1000, 460))
         MainWindow.setMaximumSize(QtCore.QSize(1000, 460))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("projectlogo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet("QMainWindow{\n"
 "      background:  #1F242A;\n"
 "}\n"
