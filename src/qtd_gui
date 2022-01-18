@@ -1,12 +1,41 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1000, 460)
         MainWindow.setMinimumSize(QtCore.QSize(1000, 460))
         MainWindow.setMaximumSize(QtCore.QSize(1000, 460))
+        MainWindow.setStyleSheet("QMainWindow{\n"
+"      background:  #1F242A;\n"
+"}\n"
+"QPushButton{\n"
+"background-color:rgb(55,62,65);\n"
+"color:rgb(201,201,201);\n"
+"border: 1px solid;\n"
+"border-radius: 10px;\n"
+"}\n"
+"QPushButton:hover{\n"
+"border:2px solid rgb(255,255,255);\n"
+"color:rgb(255,255,255);\n"
+"}\n"
+"QLabel{\n"
+"color:rgb(201,201,201);\n"
+"}\n"
+"QSlider:hover{\n"
+"border: 2px solid rgb(255,255,255);\n"
+"}\n"
+"QCheckBox{\n"
+"color:rgb(201,201,201);\n"
+"}\n"
+"QCheckBox:checked{\n"
+"color:rgb(255,255,255);\n"
+"}\n"
+"QVBoxLayout#graph_layout{\n"
+"border: 1px solid;\n"
+"}")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
@@ -19,6 +48,8 @@ class Ui_MainWindow(object):
         self.toggle_button.setMinimumSize(QtCore.QSize(50, 75))
         font = QtGui.QFont()
         font.setPointSize(12)
+        font.setBold(False)
+        font.setWeight(50)
         self.toggle_button.setFont(font)
         self.toggle_button.setObjectName("toggle_button")
         self.buttons_layout.addWidget(self.toggle_button, 1, 0, 1, 1)
@@ -26,11 +57,13 @@ class Ui_MainWindow(object):
         self.graph_button.setMinimumSize(QtCore.QSize(50, 75))
         font = QtGui.QFont()
         font.setPointSize(12)
+        font.setBold(False)
+        font.setWeight(50)
         self.graph_button.setFont(font)
         self.graph_button.setObjectName("graph_button")
         self.buttons_layout.addWidget(self.graph_button, 2, 0, 1, 1)
         self.gridLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget_2.setGeometry(QtCore.QRect(10, 170, 291, 251))
+        self.gridLayoutWidget_2.setGeometry(QtCore.QRect(10, 170, 291, 252))
         self.gridLayoutWidget_2.setObjectName("gridLayoutWidget_2")
         self.settings_layout = QtWidgets.QGridLayout(self.gridLayoutWidget_2)
         self.settings_layout.setContentsMargins(0, 0, 0, 0)
@@ -47,6 +80,8 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(False)
+        font.setItalic(False)
+        font.setUnderline(False)
         font.setWeight(50)
         self.settings_label.setFont(font)
         self.settings_label.setAlignment(QtCore.Qt.AlignCenter)
@@ -56,6 +91,7 @@ class Ui_MainWindow(object):
         self.processes_label.setMinimumSize(QtCore.QSize(0, 20))
         font = QtGui.QFont()
         font.setPointSize(8)
+        font.setUnderline(False)
         self.processes_label.setFont(font)
         self.processes_label.setAlignment(QtCore.Qt.AlignCenter)
         self.processes_label.setObjectName("processes_label")
@@ -70,6 +106,7 @@ class Ui_MainWindow(object):
         self.days_label.setMinimumSize(QtCore.QSize(0, 20))
         font = QtGui.QFont()
         font.setPointSize(8)
+        font.setUnderline(False)
         self.days_label.setFont(font)
         self.days_label.setAlignment(QtCore.Qt.AlignCenter)
         self.days_label.setObjectName("days_label")
@@ -86,6 +123,8 @@ class Ui_MainWindow(object):
         spacerItem5 = QtWidgets.QSpacerItem(20, 12, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.settings_layout.addItem(spacerItem5, 9, 1, 1, 1)
         self.days_slider = QtWidgets.QSlider(self.gridLayoutWidget_2)
+        palette = QtGui.QPalette()
+        self.days_slider.setPalette(palette)
         self.days_slider.setOrientation(QtCore.Qt.Horizontal)
         self.days_slider.setObjectName("days_slider")
         self.settings_layout.addWidget(self.days_slider, 3, 0, 1, 2)
@@ -108,7 +147,7 @@ class Ui_MainWindow(object):
         self.graph_layout.setObjectName("graph_layout")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 26))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
