@@ -47,7 +47,7 @@ ax2.set(xlabel='Runtime',ylabel='',yticklabels=[])
 #ax2.set_yticklabels([i for i in df['sort_key'].unique()], va='center', rotation=90)
 
 ax2.xaxis.set_major_formatter(FuncFormatter(label_to_hours))
-ax2.xaxis.set_major_locator(MultipleLocator(min(60, 15 * (df['runtime'].max() // 15))))
+ax2.xaxis.set_major_locator(MultipleLocator(min(60, max(1, 15 * (df['runtime'].max() // 15)))))
 
 for i,j in enumerate(path_icon.values()):
     try: 
