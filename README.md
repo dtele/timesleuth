@@ -29,3 +29,5 @@ Do any one of the following:
 - [dtele](https://github.com/dtele): Process Detection, Icon Extraction, GUI
 - [setuoR](https://github.com/setuoR): Graphical User Interface
 - [xyltius](https://github.com/xyltius): Data Visualization
+
+Icon made by [Uniconlabs](https://www.flaticon.com/authors/uniconlabs) from www.flaticon.com
