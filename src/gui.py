@@ -4,7 +4,8 @@ import time
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
+from PyQt5.QtGui import QPalette, QColor
 
 from qtd_gui import Ui_MainWindow
 from sql_commands import Writer
