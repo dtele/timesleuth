@@ -5,7 +5,7 @@ from PyQt5.QtCore import QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 
-from gui_new import Ui_MainWindow
+from qtd_gui import Ui_MainWindow
 from sql_commands import Writer
 from tracker import Tracker
 
