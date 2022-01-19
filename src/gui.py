@@ -1,13 +1,11 @@
 import sys
 import time
 
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
-from PyQt5.QtCore import QThread, pyqtSignal, Qt
+from PyQt5.QtCore import QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 
-from qtd_gui import Ui_MainWindow
+from gui_new import Ui_MainWindow
 from sql_commands import Writer
 from tracker import Tracker
 
@@ -36,39 +34,80 @@ class StartToggle(QThread):
         self.enabled = True
 
 
+class GraphManager(QThread):
+    def __init__(self):
+        QThread.__init__(self)
+        self.enabled = True
+        self.icons = False
+        self.instances = False
+        self.legend = False
+        self.names = False
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        while self.enabled:
+            # Graph generation and embedding into gui here
+            ...
+
+    def change_settings(self, icons, instances, legend, names):
+        self.icons = icons
+        self.instances = instances
+        self.legend = legend
+        self.names = names
+
+
 class MainWindow(QWidget):
-    stop_signal = pyqtSignal()
+    tracking_signal = pyqtSignal()
+    generate_signal = pyqtSignal()
+    states_signal = pyqtSignal(bool, bool, bool, bool)
 
     def __init__(self):
         super().__init__()
-        self.started = False
+        self.tracking = False
         self.ui = Ui_MainWindow()
         self.Form = QMainWindow()
         self.ui.setupUi(self.Form)
 
-        self.fig = plt.figure()
-        self.canvas = FigureCanvasQTAgg(self.fig)
-        self.ui.graph_layout.addWidget(self.canvas)
+        self.ui.toggle_button.clicked.connect(self.on_toggle)
+        self.ui.graph_button.clicked.connect(self.on_generate)
+        self.ui.icons_checkbox.stateChanged.connect(self.on_change)
+        self.ui.instances_checkbox.stateChanged.connect(self.on_change)
+        self.ui.legend_checkbox.stateChanged.connect(self.on_change)
+        self.ui.names_checkbox.stateChanged.connect(self.on_change)
 
-        self.ui.toggle_button.clicked.connect(self.on_click)
+        self.toggle_thread = StartToggle()
+        self.graph_thread = GraphManager()
 
-        self.thread = StartToggle()
-        self.stop_signal.connect(self.thread.stop)
+        self.states_signal.connect(self.graph_thread.change_settings)
+        self.tracking_signal.connect(self.toggle_thread.stop)
 
-    def on_click(self):
-        self.started = not self.started
-        if self.started:
+    def on_toggle(self):
+        self.tracking = not self.tracking
+        if self.tracking:
             self.ui.toggle_button.setText('Stop')
-            self.thread.reset()
-            self.thread.start()
+            self.toggle_thread.reset()
+            self.toggle_thread.start()
         else:
             self.ui.toggle_button.setText('Start')
-            self.stop_signal.emit()
+            self.tracking_signal.emit()
+
+    def on_generate(self):
+        self.graph_thread.start()
+
+    def on_change(self):
+        states = (self.ui.icons_checkbox.isChecked(),
+                  self.ui.instances_checkbox.isChecked(),
+                  self.ui.legend_checkbox.isChecked(),
+                  self.ui.names_checkbox.isChecked())
+
+        self.states_signal.emit(*states)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setStyle("Fusion")
+    app.setStyle('Fusion')
     palette = QPalette()
     palette.setColor(QPalette.Window, QColor(53, 53, 53))
     palette.setColor(QPalette.WindowText, Qt.white)
