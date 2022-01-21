@@ -43,12 +43,14 @@ class GraphGenerator:
         self.bar_ax.xaxis.set_major_locator(MultipleLocator(min(60, max(1, 15 * (self.df['runtime'].max() // 15)))))
 
         if self.legend:
-            self.bar_ax.legend(loc='best', bbox_to_anchor=(1, 0.5, 0.5, 0.5), frameon=True, title='Tasks')
+            self.bar_ax.legend(loc='best', bbox_to_anchor=(1, 0.5, 0.5, 0.5), frameon=True, title='')
         else:
             self.bar_ax.legend(labels=[])
 
         if self.names:
             self.bar_ax.set_yticklabels([i for i in self.df['title'].unique()], va='center', rotation=90)
+            for label in [*self.bar_ax.get_yticklabels(), *self.bar_ax.get_xticklabels()]:
+                label.set_color('#C9C9C9')
 
         try:
             for i, j in enumerate(self.path_icon.values()):
