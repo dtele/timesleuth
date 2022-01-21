@@ -5,10 +5,23 @@ from datetime import datetime, timedelta
 from PyQt5.QtCore import QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
 
-from qtd_gui import Ui_MainWindow
+from graph import GraphGenerator
+from gui import Ui_MainWindow
 from sql_commands import Writer
 from tracker import Tracker
+
+
+class MplCanvas(FigureCanvasQTAgg):
+    def __init__(self, parent=None):
+        fig = Figure(facecolor='#373E41')
+        fig.subplots_adjust(0.14, 0.08, 0.96, 0.92)
+        self.axes = fig.add_subplot(111)
+        self.axes.set_facecolor(color='#1F242A')
+        super(MplCanvas, self).__init__(fig)
 
 
 class StartToggle(QThread):
@@ -36,13 +49,14 @@ class StartToggle(QThread):
 
 
 class GraphManager(QThread):
-    def __init__(self):
+    def __init__(self, canvas):
         QThread.__init__(self)
         self.enabled = True
-        self.icons = False
-        self.instances = False
-        self.legend = False
-        self.names = False
+        self.icons = True
+        self.instances = True
+        self.legend = True
+        self.names = True
+        self.canvas = canvas
 
     def change_settings(self, icons, instances, legend, names):
         self.icons = icons
@@ -55,8 +69,10 @@ class GraphManager(QThread):
 
     def run(self):
         while self.enabled:
-            # Graph generation and embedding into gui here
-            ...
+            GraphGenerator(self.icons, self.instances, self.legend, self.names, 5, self.canvas.axes)
+            self.canvas.draw()
+            time.sleep(1)
+            self.canvas.axes.clear()
 
     def stop(self):
         self.enabled = False
@@ -81,15 +97,24 @@ class MainWindow(QWidget):
         self.ui.from_date.setDate(datetime.now().date() - timedelta(days=7))
         self.ui.to_date.setDate(datetime.now().date())
 
+        self.checkboxes = [self.ui.icons_checkbox, self.ui.instances_checkbox, self.ui.legend_checkbox, self.ui.names_checkbox]
+
+        for checkbox in self.checkboxes:
+            checkbox.setChecked(True)
+            checkbox.stateChanged.connect(self.on_change)
+
         self.ui.toggle_button.clicked.connect(self.on_toggle)
         self.ui.graph_button.clicked.connect(self.on_generate)
-        self.ui.icons_checkbox.stateChanged.connect(self.on_change)
-        self.ui.instances_checkbox.stateChanged.connect(self.on_change)
-        self.ui.legend_checkbox.stateChanged.connect(self.on_change)
-        self.ui.names_checkbox.stateChanged.connect(self.on_change)
+
+        self.figure = plt.figure()
+        self.canvas = MplCanvas(self.figure)
+        self.ui.graph_layout.addWidget(self.canvas)
+
+        GraphGenerator(*[i.checkState() for i in self.checkboxes], 5, self.canvas.axes)
+        self.canvas.draw()
 
         self.toggle_thread = StartToggle()
-        self.graph_thread = GraphManager()
+        self.graph_thread = GraphManager(self.canvas)
 
         self.generate_signal.connect(self.graph_thread.stop)
         self.states_signal.connect(self.graph_thread.change_settings)
@@ -116,10 +141,7 @@ class MainWindow(QWidget):
             self.generate_signal.emit()
 
     def on_change(self):
-        states = (self.ui.icons_checkbox.isChecked(),
-                  self.ui.instances_checkbox.isChecked(),
-                  self.ui.legend_checkbox.isChecked(),
-                  self.ui.names_checkbox.isChecked())
+        states = [i.checkState() for i in self.checkboxes]
 
         self.states_signal.emit(*states)
 
