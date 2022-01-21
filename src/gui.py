@@ -16,6 +16,9 @@ from tracker import Tracker
 
 
 class MplCanvas(FigureCanvasQTAgg):
+    """
+    A class to transfer the canvas between threads.
+    """
     def __init__(self, parent=None):
         fig = Figure(facecolor='#373E41')
         fig.subplots_adjust(0.14, 0.08, 0.96, 0.92)
@@ -25,6 +28,9 @@ class MplCanvas(FigureCanvasQTAgg):
 
 
 class StartToggle(QThread):
+    """
+    A class to toggle user activity tracking.
+    """
     def __init__(self):
         QThread.__init__(self)
         self.enabled = True
@@ -49,6 +55,9 @@ class StartToggle(QThread):
 
 
 class GraphManager(QThread):
+    """
+    A class to update the graph and transfer parameters from MainWindow to GraphGenerator.
+    """
     def __init__(self, canvas):
         QThread.__init__(self)
         self.enabled = True
@@ -85,6 +94,9 @@ class GraphManager(QThread):
 
 
 class MainWindow(QWidget):
+    """
+    A class for the parent window.
+    """
     tracking_signal = pyqtSignal()
     generate_signal = pyqtSignal()
     states_signal = pyqtSignal(bool, bool, bool, bool)
