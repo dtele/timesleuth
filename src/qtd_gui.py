@@ -17,7 +17,7 @@ class Ui_MainWindow(object):
 "background-color:rgb(55,62,65);\n"
 "color:rgb(201,201,201);\n"
 "border: 1px solid;\n"
-"border-radius: 8px;\n"
+"border-radius: 2px;\n"
 "}\n"
 "QPushButton:hover{\n"
 "border:2px solid rgb(255,255,255);\n"
