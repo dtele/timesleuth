@@ -69,10 +69,13 @@ class GraphManager(QThread):
 
     def run(self):
         while self.enabled:
-            GraphGenerator(self.icons, self.instances, self.legend, self.names, 5, self.canvas.axes)
-            self.canvas.draw()
-            time.sleep(1)
-            self.canvas.axes.clear()
+            try:
+                GraphGenerator(self.icons, self.instances, self.legend, self.names, 5, self.canvas.axes)
+                self.canvas.draw()
+                time.sleep(1)
+                self.canvas.axes.clear()
+            except Exception as e:
+                print(f'{e}: Graph generation failed, sqlite file might be empty')
 
     def stop(self):
         self.enabled = False
@@ -110,8 +113,11 @@ class MainWindow(QWidget):
         self.canvas = MplCanvas(self.figure)
         self.ui.graph_layout.addWidget(self.canvas)
 
-        GraphGenerator(*[i.checkState() for i in self.checkboxes], 5, self.canvas.axes)
-        self.canvas.draw()
+        try:
+            GraphGenerator(*[i.checkState() for i in self.checkboxes], 5, self.canvas.axes)
+            self.canvas.draw()
+        except Exception as e:
+            print(f'{e}: Graph generation failed, sqlite file might be empty')
 
         self.toggle_thread = StartToggle()
         self.graph_thread = GraphManager(self.canvas)
