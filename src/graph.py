@@ -8,11 +8,11 @@ from sql_commands import Reader
 
 
 class GraphGenerator:
-    def __init__(self, icons, instances, names, legend, num_bars, ax):
+    def __init__(self, icons, instances, legend, names, num_bars, ax):
         self.icons = icons
         self.instances = instances
-        self.names = names
         self.legend = legend
+        self.names = names
         self.ax = ax
 
         self.colors = 'mako'
@@ -37,20 +37,21 @@ class GraphGenerator:
         if self.instances:
             self.add_instances()
 
-        self.bar_ax = barplot(y='exe_path', x='runtime', data=self.df, dodge=False, palette=self.colors, saturation=0.69, hue='title', ax=self.ax)
+        self.bar_ax = barplot(y='exe_path', x='runtime', data=self.df, dodge=False, palette=self.colors, saturation=0.8, hue='title', ax=self.ax)
         self.bar_ax.set(xlabel='', ylabel='', yticklabels=[])
         self.bar_ax.xaxis.set_major_formatter(FuncFormatter(self.label_to_hours))
         self.bar_ax.xaxis.set_major_locator(MultipleLocator(min(60, max(1, 15 * (self.df['runtime'].max() // 15)))))
 
         if self.legend:
-            self.bar_ax.legend(loc='best', bbox_to_anchor=(1, 0.5, 0.5, 0.5), frameon=True, title='')
+            self.bar_ax.legend(loc='lower right', frameon=True, title='')
         else:
-            self.bar_ax.legend(labels=[])
+            self.bar_ax.legend([], [], frameon=False)
 
         if self.names:
             self.bar_ax.set_yticklabels([i for i in self.df['title'].unique()], va='center', rotation=90)
-            for label in [*self.bar_ax.get_yticklabels(), *self.bar_ax.get_xticklabels()]:
-                label.set_color('#C9C9C9')
+
+        for label in [*self.bar_ax.get_yticklabels(), *self.bar_ax.get_xticklabels()]:
+            label.set_color('#C9C9C9')
 
         try:
             for i, j in enumerate(self.path_icon.values()):
