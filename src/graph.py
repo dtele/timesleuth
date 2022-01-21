@@ -8,7 +8,19 @@ from sql_commands import Reader
 
 
 class GraphGenerator:
-    def __init__(self, icons, instances, legend, names, num_bars, ax):
+    """
+    A class to handle generation of the graph.
+    """
+    
+    def __init__(self, icons : bool, instances : bool, legend : bool, names : bool, num_bars : bool, ax):
+        """
+        :param icons: specifies whether icons to be on graph
+        :param instances: specifies whether instances to be plotted
+        :param legend: specifies whether legend to be present on graph
+        :param names: specifies whether process names to be on graph
+        :param num_bars: number of processes to be plotted
+        :param ax: matplotlib Axes object to draw plot onto
+        """
         self.icons = icons
         self.instances = instances
         self.legend = legend
@@ -19,25 +31,44 @@ class GraphGenerator:
         self.xcoord = -37 if icons and self.names else -27
         self.path_icon = {}
         self.strip_ax = ''
-
+        
+        
+        """
+        Reads the DataFrame object from the database based on a date range.
+        Adds DataFrame column with process name and sorting by runtime.
+        """
         self.db_obj = Reader(r'dbname.sqlite')
         self.df = self.db_obj.read_rows('2022-01-01')
         self.df['title'] = [i.split('\\')[-1][:-4] for i in self.df['exe_path']]
-        self.df.sort_values(by='runtime', inplace=True, ascending=False)
+        self.df.sort_values(by='runtime', ascending=False, inplace=True)
 
         self.num_bars = min(num_bars, len(self.df['exe_path'].unique()))
-
+        
+        
+        """
+        Creates icon objects if needed.
+        Splitting DataFrame based on number of bars.
+        Sets the graph theme.
+        Adds plots of process instances.
+        """
         if self.icons:
-            self.add_icons()
+            self.icon_create()
 
         self.df = self.df[self.df.runtime.isin(sorted(self.df.runtime.unique(), reverse=True)[:self.num_bars])]
 
-        set_theme(style='ticks', context='paper', font='arial')
+        set_theme(context='paper', style='ticks', font='arial')
 
         if self.instances:
             self.add_instances()
-
-        self.bar_ax = barplot(y='exe_path', x='runtime', data=self.df, dodge=False, palette=self.colors, saturation=0.8, hue='title', ax=self.ax)
+        
+        
+        """
+        Creates the barplot along with graph tick styles.
+        Adds legend or names if specified.
+        Sets xticklabels and yticklabels colors.
+        Adds icons to graph, fails if not specified
+        """
+        self.bar_ax = barplot(data=self.df, x='runtime', y='exe_path', hue='title', palette=self.colors, saturation=0.8, dodge=False, ax=self.ax)
         self.bar_ax.set(xlabel='', ylabel='', yticklabels=[])
         self.bar_ax.xaxis.set_major_formatter(FuncFormatter(self.label_to_hours))
         self.bar_ax.xaxis.set_major_locator(MultipleLocator(min(60, max(1, 15 * (self.df['runtime'].max() // 15)))))
@@ -59,33 +90,57 @@ class GraphGenerator:
         except Exception as e:
             print(e)
 
-    def add_icons(self):
+            
+    def icon_create(self) -> None:
+        """
+        Creates path and icon object dict along with color palette based on most dominant color.
+        Also rearranges DataFrame based on failed icon extraction.
+        """
         fail_lst = []
-        for i in self.df['exe_path'].unique():
+        for path in self.df['exe_path'].unique():
             try:
-                self.path_icon[i] = Icon(i)
-                assert self.path_icon[i].img_pil
+                self.path_icon[path] = Icon(path)
+                assert self.path_icon[path].img_pil
             except Exception as e:
-                fail_lst.append(i)
-                print(e, f"\n{i} is not a valid path.")
+                fail_lst.append(path)
+                print(e, f"\n{path} is not a valid path.")
                 pass
 
         self.df.drop(self.df[self.df.exe_path.isin(fail_lst)].index, inplace=True)
         self.path_icon = {i: j for i, j in list(self.path_icon.items())[:self.num_bars]}
         self.colors = color_palette([i.dominant_color for i in self.path_icon.values()])
 
-    def add_instances(self):
-        self.strip_ax = stripplot(data=self.df, y='exe_path', x='instance_time', palette=self.colors, linewidth=1.2, size=6.9, ax=self.ax)
-        self.strip_ax.set(xlabel='', ylabel='', xticklabels=[], yticklabels=[])
+        
+    def add_instances(self) -> None:
+        """
+        Adds plots of all instances of the process in the DataFrame to the graph.
+        """
+        self.strip_ax = stripplot(data=self.df, x='instance_time', y='exe_path', palette=self.colors, size=6.9, linewidth=1.2, ax=self.ax)
+        self.strip_ax.set(xlabel='', xticklabels=[], ylabel='', yticklabels=[])
 
-    def offset_image(self, coord, img_obj, ax1_local, xcoord):
-        img = np_arr(img_obj.img_pil)
-        im = OffsetImage(img)
-        im.image.axes = ax1_local
-        ab = AnnotationBbox(im, (0, coord), xybox=(xcoord, 0), frameon=False,
-                            xycoords='data', boxcoords="offset points", pad=0)
-        ax1_local.add_artist(ab)
+        
+    def offset_image(self, coord, icon, ax_local, xcoord) -> None:
+        """
+        Adds pil object container of icons extracted to the graph.
+        
+        :param coord: y-axis position for image
+        :param icon: icon object to be added to graph
+        :param ax_local: matplotlib Axes to add icons on
+        :param xcoord: x-axis spacing of icons from y-axis
+        """
+        img_arr = np_arr(icon.img_pil)
+        img_con = OffsetImage(img_arr)
+        img_con.image.axes = ax_local
+        con_pos = AnnotationBbox(img_con, (0, coord), xybox=(xcoord, 0), xycoords='data',
+                            boxcoords="offset points", frameon=False, pad=0)
+        ax_local.add_artist(con_pos)
 
+        
     @staticmethod
-    def label_to_hours(label, pos):
+    def label_to_hours(label, pos) -> str:
+        """
+        Formats the runtime to hhmm format for graph xticklabels.
+        
+        :param label: runtime value of process
+        """
         return f'{int(label // 60)}h{int(label % 60)}m'
