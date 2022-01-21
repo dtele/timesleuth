@@ -49,6 +49,9 @@ class Ui_MainWindow(object):
 "QDateEdit{\n"
 "color:rgb(201,201,201);\n"
 "}\n"
+"QDateEdit:hover{\n"
+"color:rgb(255,255,255);\n"
+"}\n"                                
 "QDateEdit:focus{\n"
 "color:rgb(255,255,255);\n"
 "}")
