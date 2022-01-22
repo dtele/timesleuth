@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
 from graph import GraphGenerator
-from gui import Ui_MainWindow
+from qtd_gui import Ui_MainWindow
 from sql_commands import Writer
 from tracker import Tracker
 
