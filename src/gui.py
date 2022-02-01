@@ -65,13 +65,19 @@ class GraphManager(QThread):
         self.instances = True
         self.legend = True
         self.names = True
+        self.from_date = (datetime.now().date() - timedelta(days=7)).strftime('%Y-%m-%d')
+        self.to_date = datetime.now().date().strftime('%Y-%m-%d')
         self.canvas = canvas
 
-    def change_settings(self, icons, instances, legend, names):
+    def change_states(self, icons, instances, legend, names):
         self.icons = icons
         self.instances = instances
         self.legend = legend
         self.names = names
+
+    def change_dates(self, from_date, to_date):
+        self.from_date = from_date
+        self.to_date = to_date
 
     def __del__(self):
         self.wait()
@@ -79,12 +85,12 @@ class GraphManager(QThread):
     def run(self):
         while self.enabled:
             try:
-                GraphGenerator(self.icons, self.instances, self.legend, self.names, 5, self.canvas.axes)
+                GraphGenerator(self.icons, self.instances, self.legend, self.names, 5, self.from_date, self.to_date, self.canvas.axes)
                 self.canvas.draw()
-                time.sleep(1)
                 self.canvas.axes.clear()
             except Exception as e:
                 print(f'{e}: Graph generation failed, sqlite file might be empty')
+            time.sleep(1)
 
     def stop(self):
         self.enabled = False
@@ -100,6 +106,7 @@ class MainWindow(QWidget):
     tracking_signal = pyqtSignal()
     generate_signal = pyqtSignal()
     states_signal = pyqtSignal(bool, bool, bool, bool)
+    dates_signal = pyqtSignal(str, str)
 
     def __init__(self):
         super().__init__()
@@ -111,12 +118,14 @@ class MainWindow(QWidget):
 
         self.ui.from_date.setDate(datetime.now().date() - timedelta(days=7))
         self.ui.to_date.setDate(datetime.now().date())
+        self.ui.from_date.dateChanged.connect(self.on_change_dates)
+        self.ui.to_date.dateChanged.connect(self.on_change_dates)
 
         self.checkboxes = [self.ui.icons_checkbox, self.ui.instances_checkbox, self.ui.legend_checkbox, self.ui.names_checkbox]
 
         for checkbox in self.checkboxes:
             checkbox.setChecked(True)
-            checkbox.stateChanged.connect(self.on_change)
+            checkbox.stateChanged.connect(self.on_change_states)
 
         self.ui.toggle_button.clicked.connect(self.on_toggle)
         self.ui.graph_button.clicked.connect(self.on_generate)
@@ -126,7 +135,7 @@ class MainWindow(QWidget):
         self.ui.graph_layout.addWidget(self.canvas)
 
         try:
-            GraphGenerator(*[i.checkState() for i in self.checkboxes], 5, self.canvas.axes)
+            GraphGenerator(*[i.checkState() for i in self.checkboxes], 5, self.ui.from_date.date().toString('yyyy-MM-dd'), self.ui.to_date.date().toString('yyyy-MM-dd'), self.canvas.axes)
             self.canvas.draw()
         except Exception as e:
             print(f'{e}: Graph generation failed, sqlite file might be empty')
@@ -135,7 +144,8 @@ class MainWindow(QWidget):
         self.graph_thread = GraphManager(self.canvas)
 
         self.generate_signal.connect(self.graph_thread.stop)
-        self.states_signal.connect(self.graph_thread.change_settings)
+        self.states_signal.connect(self.graph_thread.change_states)
+        self.dates_signal.connect(self.graph_thread.change_dates)
         self.tracking_signal.connect(self.toggle_thread.stop)
 
     def on_toggle(self):
@@ -158,10 +168,15 @@ class MainWindow(QWidget):
             self.ui.graph_button.setText('Start Generating Graph')
             self.generate_signal.emit()
 
-    def on_change(self):
+    def on_change_states(self):
         states = [i.checkState() for i in self.checkboxes]
 
         self.states_signal.emit(*states)
+
+    def on_change_dates(self):
+        dates = (self.ui.from_date.date().toString('yyyy-MM-dd'), self.ui.to_date.date().toString('yyyy-MM-dd'))
+
+        self.dates_signal.emit(*dates)
 
 
 if __name__ == "__main__":
@@ -178,3 +193,4 @@ if __name__ == "__main__":
     window.Form.show()
 
     sys.exit(app.exec_())
+    
