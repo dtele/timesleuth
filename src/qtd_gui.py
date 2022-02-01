@@ -212,5 +212,5 @@ class Ui_MainWindow(object):
             self.delay_label.setText(_translate("MainWindow", "Delay"))
             self.label.setText(_translate("MainWindow", "From"))
             self.label_2.setText(_translate("MainWindow", "To"))
-            self.names_checkbox.setText(_translate("MainWindow", "Show Names    "))
+            self.names_checkbox.setText(_translate("MainWindow", "Show Names     "))
             self.legend_checkbox.setText(_translate("MainWindow", "Show Legend"))
