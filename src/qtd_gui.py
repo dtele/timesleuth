@@ -17,6 +17,7 @@ class Ui_MainWindow(object):
 "background-color:rgb(55,62,65);\n"
 "color:rgb(201,201,201);\n"
 "border: 1px solid;\n"
+"border-radius: 2px;\n"
 "}\n"
 "QPushButton:hover{\n"
 "border:2px solid rgb(255,255,255);\n"
@@ -86,13 +87,15 @@ class Ui_MainWindow(object):
         self.settings_layout = QtWidgets.QGridLayout(self.gridLayoutWidget_2)
         self.settings_layout.setContentsMargins(0, 0, 0, 0)
         self.settings_layout.setObjectName("settings_layout")
-        self.from_date = QtWidgets.QDateEdit(self.gridLayoutWidget_2)
-        self.from_date.setObjectName("from_date")
-        self.settings_layout.addWidget(self.from_date, 3, 0, 1, 1)
+        self.date_start = QtWidgets.QDateEdit(self.gridLayoutWidget_2)
+        self.date_start.setObjectName("date_start")
+        self.settings_layout.addWidget(self.date_start, 3, 0, 1, 1)
         self.delay_slider = QtWidgets.QSlider(self.gridLayoutWidget_2)
         palette = QtGui.QPalette()
         self.delay_slider.setPalette(palette)
         self.delay_slider.setOrientation(QtCore.Qt.Horizontal)
+        self.delay_slider.setRange(0,5)
+        self.delay_slider.setPageStep(1)
         self.delay_slider.setObjectName("delay_slider")
         self.settings_layout.addWidget(self.delay_slider, 6, 0, 1, 2)
         spacerItem = QtWidgets.QSpacerItem(20, 3, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
@@ -106,6 +109,8 @@ class Ui_MainWindow(object):
         self.settings_layout.addItem(spacerItem2, 12, 1, 1, 1)
         self.processes_slider = QtWidgets.QSlider(self.gridLayoutWidget_2)
         self.processes_slider.setOrientation(QtCore.Qt.Horizontal)
+        self.processes_slider.setRange(0, 6)
+        self.processes_slider.setPageStep(1)
         self.processes_slider.setObjectName("processes_slider")
         self.settings_layout.addWidget(self.processes_slider, 10, 0, 1, 2)
         self.instances_checkbox = QtWidgets.QCheckBox(self.gridLayoutWidget_2)
@@ -152,9 +157,9 @@ class Ui_MainWindow(object):
         self.delay_label.setAlignment(QtCore.Qt.AlignCenter)
         self.delay_label.setObjectName("delay_label")
         self.settings_layout.addWidget(self.delay_label, 7, 0, 1, 2)
-        self.to_date = QtWidgets.QDateEdit(self.gridLayoutWidget_2)
-        self.to_date.setObjectName("to_date")
-        self.settings_layout.addWidget(self.to_date, 3, 1, 1, 1)
+        self.date_end = QtWidgets.QDateEdit(self.gridLayoutWidget_2)
+        self.date_end.setObjectName("date_end")
+        self.settings_layout.addWidget(self.date_end, 3, 1, 1, 1)
         self.label = QtWidgets.QLabel(self.gridLayoutWidget_2)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
@@ -207,4 +212,3 @@ class Ui_MainWindow(object):
             self.label_2.setText(_translate("MainWindow", "To"))
             self.names_checkbox.setText(_translate("MainWindow", "Show Names    "))
             self.legend_checkbox.setText(_translate("MainWindow", "Show Legend"))
-            
