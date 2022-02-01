@@ -3,8 +3,8 @@ import time
 from datetime import datetime, timedelta
 from os import getenv, mkdir
 
-from PyQt5.QtCore import QThread, Qt, pyqtSignal
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtCore import QByteArray, QThread, Qt, pyqtSignal
+from PyQt5.QtGui import QColor, QIcon, QPalette, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -36,7 +36,6 @@ class StartToggle(QThread):
         QThread.__init__(self)
         self.enabled = True
         self.delay = 10
-        # change file name later
         self.writer = Writer(path)
         self.tracker = Tracker(callback_function=self.writer.write)
 
@@ -232,7 +231,15 @@ if __name__ == "__main__":
     palette.setColor(QPalette.Text, Qt.white)
     palette.setColor(QPalette.Button, QColor(53, 53, 53))
     app.setPalette(palette)
+
+    pixmap = QPixmap()
+    img_b64 = b'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'
+
+    pixmap.loadFromData(QByteArray.fromBase64(img_b64))
+    icon = QIcon(pixmap)
+
     window = MainWindow()
+    window.Form.setWindowIcon(icon)
     window.Form.show()
 
     sys.exit(app.exec_())
