@@ -1,7 +1,7 @@
-import os
 import sys
 import time
 from datetime import datetime, timedelta
+from os import getenv, mkdir
 
 from PyQt5.QtCore import QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor
@@ -36,6 +36,7 @@ class StartToggle(QThread):
         QThread.__init__(self)
         self.enabled = True
         self.delay = 10
+        # change file name later
         self.writer = Writer(path)
         self.tracker = Tracker(callback_function=self.writer.write)
 
@@ -65,8 +66,10 @@ class GraphManager(QThread):
         self.instances = True
         self.legend = True
         self.names = True
-        self.from_date = (datetime.now().date() - timedelta(days=7)).strftime('%Y-%m-%d')
-        self.to_date = datetime.now().date().strftime('%Y-%m-%d')
+        self.date_start = (datetime.now().date() - timedelta(days=7)).strftime('%Y-%m-%d')
+        self.date_end = datetime.now().date().strftime('%Y-%m-%d')
+        self.delay = 1
+        self.processes_num = 3
         self.path = path
         self.canvas = canvas
 
@@ -76,9 +79,13 @@ class GraphManager(QThread):
         self.legend = legend
         self.names = names
 
-    def change_dates(self, from_date, to_date):
-        self.from_date = from_date
-        self.to_date = to_date
+    def change_dates(self, date_start, date_end):
+        self.date_start = date_start
+        self.date_end = date_end
+
+    def change_sliders(self, delay, processes_num):
+        self.delay = delay
+        self.processes_num = processes_num
 
     def __del__(self):
         self.wait()
@@ -86,12 +93,16 @@ class GraphManager(QThread):
     def run(self):
         while self.enabled:
             try:
-                GraphGenerator(self.icons, self.instances, self.legend, self.names, 5, self.from_date, self.to_date, self.canvas.axes)
+                GraphGenerator(icons=self.icons, instances=self.instances, legend=self.legend, names=self.names,
+                               num_bars=self.processes_num, date_start=self.date_start, date_end=self.date_end,
+                               path=self.path, ax=self.canvas.axes)
                 self.canvas.draw()
                 self.canvas.axes.clear()
             except Exception as e:
+                self.canvas.axes.clear()
+                self.canvas.draw()
                 print(f'{e}: Graph generation failed, sqlite file might be empty')
-            time.sleep(1)
+            time.sleep(self.delay)
 
     def stop(self):
         self.enabled = False
@@ -108,6 +119,7 @@ class MainWindow(QWidget):
     generate_signal = pyqtSignal()
     states_signal = pyqtSignal(bool, bool, bool, bool)
     dates_signal = pyqtSignal(str, str)
+    sliders_signal = pyqtSignal(int, int)
 
     def __init__(self):
         super().__init__()
@@ -117,38 +129,54 @@ class MainWindow(QWidget):
         self.Form = QMainWindow()
         self.ui.setupUi(self.Form)
 
-        self.ui.from_date.setDate(datetime.now().date() - timedelta(days=7))
-        self.ui.to_date.setDate(datetime.now().date())
-        self.ui.from_date.dateChanged.connect(self.on_change_dates)
-        self.ui.to_date.dateChanged.connect(self.on_change_dates)
+        # Date selection
+        self.ui.date_start.setDate(datetime.now().date() - timedelta(days=7))
+        self.ui.date_end.setDate(datetime.now().date())
+        self.ui.date_start.dateChanged.connect(self.on_change_dates)
+        self.ui.date_end.dateChanged.connect(self.on_change_dates)
 
+        # Sliders
+        self.ui.delay_slider.setValue(1)
+        self.ui.processes_slider.setValue(3)
+        self.ui.delay_slider.valueChanged.connect(self.on_change_sliders)
+        self.ui.processes_slider.valueChanged.connect(self.on_change_sliders)
+
+        # Checkboxes
         self.checkboxes = [self.ui.icons_checkbox, self.ui.instances_checkbox, self.ui.legend_checkbox, self.ui.names_checkbox]
 
         for checkbox in self.checkboxes:
             checkbox.setChecked(True)
             checkbox.stateChanged.connect(self.on_change_states)
 
+        # Buttons
         self.ui.toggle_button.clicked.connect(self.on_toggle)
         self.ui.graph_button.clicked.connect(self.on_generate)
 
+        # Graph
         self.figure = plt.figure()
         self.canvas = MplCanvas(self.figure)
         self.ui.graph_layout.addWidget(self.canvas)
-        self.path = os.getenv('UserProfile') + r'\Documents\TimeSleuth\activity.sqlite'
+
+        self.path = fr'{getenv("UserProfile")}\Documents\TimeSleuth\activity.sqlite'
 
         try:
-            GraphGenerator(*[i.checkState() for i in self.checkboxes], 5, self.ui.from_date.date().toString('yyyy-MM-dd'), self.ui.to_date.date().toString('yyyy-MM-dd'), self.canvas.axes)
+            GraphGenerator(*[checkbox.checkState() for checkbox in self.checkboxes],
+                           num_bars=3, date_start=self.ui.date_start.date().toString('yyyy-MM-dd'),
+                           date_end=self.ui.date_end.date().toString('yyyy-MM-dd'),
+                           path=self.path, ax=self.canvas.axes)
             self.canvas.draw()
         except Exception as e:
             print(f'{e}: Graph generation failed, sqlite file might be empty')
 
-        self.toggle_thread = StartToggle()
-        self.graph_thread = GraphManager(self.canvas)
+        # Threads
+        self.toggle_thread = StartToggle(self.path)
+        self.graph_thread = GraphManager(self.canvas, self.path)
 
+        self.tracking_signal.connect(self.toggle_thread.stop)
         self.generate_signal.connect(self.graph_thread.stop)
         self.states_signal.connect(self.graph_thread.change_states)
         self.dates_signal.connect(self.graph_thread.change_dates)
-        self.tracking_signal.connect(self.toggle_thread.stop)
+        self.sliders_signal.connect(self.graph_thread.change_sliders)
 
     def on_toggle(self):
         self.tracking = not self.tracking
@@ -176,18 +204,25 @@ class MainWindow(QWidget):
         self.states_signal.emit(*states)
 
     def on_change_dates(self):
-        dates = (self.ui.from_date.date().toString('yyyy-MM-dd'), self.ui.to_date.date().toString('yyyy-MM-dd'))
+        dates = (self.ui.date_start.date().toString('yyyy-MM-dd'), self.ui.date_end.date().toString('yyyy-MM-dd'))
 
         self.dates_signal.emit(*dates)
 
+    def on_change_sliders(self):
+        values = (self.ui.delay_slider.value(), self.ui.processes_slider.value())
+
+        self.ui.delay_label.setText(f'Delay - {values[0]}s')
+        self.ui.processes_label.setText(f'Processes - {values[1]}')
+
+        self.sliders_signal.emit(*values)
+
 
 if __name__ == "__main__":
-    path = os.getenv('UserProfile') + '\\Documents\\'
     try:
-        os.mkdir(path + r'\TimeSleuth')
+        mkdir(fr'{getenv("UserProfile")}\Documents\TimeSleuth')
     except FileExistsError:
         pass
-    
+
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
     palette = QPalette()
@@ -201,4 +236,3 @@ if __name__ == "__main__":
     window.Form.show()
 
     sys.exit(app.exec_())
-   
