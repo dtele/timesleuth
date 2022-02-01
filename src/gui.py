@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 from datetime import datetime, timedelta
@@ -31,12 +32,11 @@ class StartToggle(QThread):
     """
     A class to toggle user activity tracking.
     """
-    def __init__(self):
+    def __init__(self, path):
         QThread.__init__(self)
         self.enabled = True
         self.delay = 10
-        # change file name later
-        self.writer = Writer(r'dbname.sqlite')
+        self.writer = Writer(path)
         self.tracker = Tracker(callback_function=self.writer.write)
 
     def __del__(self):
@@ -58,7 +58,7 @@ class GraphManager(QThread):
     """
     A class to update the graph and transfer parameters from MainWindow to GraphGenerator.
     """
-    def __init__(self, canvas):
+    def __init__(self, canvas, path):
         QThread.__init__(self)
         self.enabled = True
         self.icons = True
@@ -67,6 +67,7 @@ class GraphManager(QThread):
         self.names = True
         self.from_date = (datetime.now().date() - timedelta(days=7)).strftime('%Y-%m-%d')
         self.to_date = datetime.now().date().strftime('%Y-%m-%d')
+        self.path = path
         self.canvas = canvas
 
     def change_states(self, icons, instances, legend, names):
@@ -133,6 +134,7 @@ class MainWindow(QWidget):
         self.figure = plt.figure()
         self.canvas = MplCanvas(self.figure)
         self.ui.graph_layout.addWidget(self.canvas)
+        self.path = os.getenv('UserProfile') + r'\Documents\TimeSleuth\activity.sqlite'
 
         try:
             GraphGenerator(*[i.checkState() for i in self.checkboxes], 5, self.ui.from_date.date().toString('yyyy-MM-dd'), self.ui.to_date.date().toString('yyyy-MM-dd'), self.canvas.axes)
@@ -180,6 +182,12 @@ class MainWindow(QWidget):
 
 
 if __name__ == "__main__":
+    path = os.getenv('UserProfile') + '\\Documents\\'
+    try:
+        os.mkdir(path + r'\TimeSleuth')
+    except FileExistsError:
+        pass
+    
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
     palette = QPalette()
@@ -193,4 +201,4 @@ if __name__ == "__main__":
     window.Form.show()
 
     sys.exit(app.exec_())
-    
+   
