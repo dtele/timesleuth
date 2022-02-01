@@ -8,7 +8,7 @@ class Ui_MainWindow(object):
         MainWindow.setMinimumSize(QtCore.QSize(1000, 515))
         MainWindow.setMaximumSize(QtCore.QSize(1000, 515))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("./gui_test\\projectlogo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("projectlogo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet("QMainWindow{\n"
 "      background:  #1F242A;\n"
@@ -17,6 +17,7 @@ class Ui_MainWindow(object):
 "background-color:rgb(55,62,65);\n"
 "color:rgb(201,201,201);\n"
 "border: 1px solid;\n"
+"border-radius: 2px;\n"
 "}\n"
 "QPushButton:hover{\n"
 "border:2px solid rgb(255,255,255);\n"
@@ -99,7 +100,7 @@ class Ui_MainWindow(object):
         self.settings_layout.addItem(spacerItem, 18, 0, 1, 1)
         self.icons_checkbox = QtWidgets.QCheckBox(self.gridLayoutWidget_2)
         self.icons_checkbox.setObjectName("icons_checkbox")
-        self.settings_layout.addWidget(self.icons_checkbox, 13, 0, 1, 1)
+        self.settings_layout.addWidget(self.icons_checkbox, 13, 0, 1, 1, QtCore.Qt.AlignHCenter)
         spacerItem1 = QtWidgets.QSpacerItem(20, 3, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.settings_layout.addItem(spacerItem1, 18, 1, 1, 1)
         spacerItem2 = QtWidgets.QSpacerItem(20, 12, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
@@ -110,7 +111,7 @@ class Ui_MainWindow(object):
         self.settings_layout.addWidget(self.processes_slider, 10, 0, 1, 2)
         self.instances_checkbox = QtWidgets.QCheckBox(self.gridLayoutWidget_2)
         self.instances_checkbox.setObjectName("instances_checkbox")
-        self.settings_layout.addWidget(self.instances_checkbox, 13, 1, 1, 1)
+        self.settings_layout.addWidget(self.instances_checkbox, 13, 1, 1, 1, QtCore.Qt.AlignHCenter)
         spacerItem3 = QtWidgets.QSpacerItem(20, 3, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.settings_layout.addItem(spacerItem3, 8, 1, 1, 1)
         self.processes_label = QtWidgets.QLabel(self.gridLayoutWidget_2)
@@ -167,23 +168,23 @@ class Ui_MainWindow(object):
         self.settings_layout.addItem(spacerItem9, 2, 0, 1, 1)
         self.names_checkbox = QtWidgets.QCheckBox(self.gridLayoutWidget_2)
         self.names_checkbox.setObjectName("names_checkbox")
-        self.settings_layout.addWidget(self.names_checkbox, 16, 1, 1, 1)
+        self.settings_layout.addWidget(self.names_checkbox, 16, 1, 1, 1, QtCore.Qt.AlignHCenter)
         self.legend_checkbox = QtWidgets.QCheckBox(self.gridLayoutWidget_2)
         self.legend_checkbox.setObjectName("legend_checkbox")
-        self.settings_layout.addWidget(self.legend_checkbox, 16, 0, 1, 1)
+        self.settings_layout.addWidget(self.legend_checkbox, 16, 0, 1, 1, QtCore.Qt.AlignHCenter)
         spacerItem10 = QtWidgets.QSpacerItem(20, 8, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.settings_layout.addItem(spacerItem10, 5, 1, 1, 1)
         spacerItem11 = QtWidgets.QSpacerItem(20, 8, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.settings_layout.addItem(spacerItem11, 2, 1, 1, 1)
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(309, 9, 681, 421))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(309, 9, 681, 471))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.graph_layout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.graph_layout.setContentsMargins(0, 0, 0, 0)
         self.graph_layout.setObjectName("graph_layout")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 26))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -194,16 +195,17 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "TimeSleuth"))
-        self.toggle_button.setText(_translate("MainWindow", "Start Tracking"))
-        self.graph_button.setText(_translate("MainWindow", "Start Generating Graph"))
-        self.icons_checkbox.setText(_translate("MainWindow", "Show Icons"))
-        self.instances_checkbox.setText(_translate("MainWindow", "Show Instances"))
-        self.processes_label.setText(_translate("MainWindow", "Processes"))
-        self.settings_label.setText(_translate("MainWindow", "Graph Settings"))
-        self.delay_label.setText(_translate("MainWindow", "Delay"))
-        self.label.setText(_translate("MainWindow", "From"))
-        self.label_2.setText(_translate("MainWindow", "To"))
-        self.names_checkbox.setText(_translate("MainWindow", "Show Names"))
-        self.legend_checkbox.setText(_translate("MainWindow", "Show Legend"))
+            _translate = QtCore.QCoreApplication.translate
+            MainWindow.setWindowTitle(_translate("MainWindow", "TimeSleuth"))
+            self.toggle_button.setText(_translate("MainWindow", "Start Tracking"))
+            self.graph_button.setText(_translate("MainWindow", "Start Generating Graph"))
+            self.icons_checkbox.setText(_translate("MainWindow", "Show Icons   "))
+            self.instances_checkbox.setText(_translate("MainWindow", "Show Instances"))
+            self.processes_label.setText(_translate("MainWindow", "Processes"))
+            self.settings_label.setText(_translate("MainWindow", "Graph Settings"))
+            self.delay_label.setText(_translate("MainWindow", "Delay"))
+            self.label.setText(_translate("MainWindow", "From"))
+            self.label_2.setText(_translate("MainWindow", "To"))
+            self.names_checkbox.setText(_translate("MainWindow", "Show Names    "))
+            self.legend_checkbox.setText(_translate("MainWindow", "Show Legend"))
+            
