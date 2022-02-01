@@ -12,13 +12,15 @@ class GraphGenerator:
     A class to handle generation of the graph.
     """
     
-    def __init__(self, icons : bool, instances : bool, legend : bool, names : bool, num_bars : bool, ax):
+    def __init__(self, icons : bool, instances : bool, legend : bool, names : bool, num_bars : int, low_date, upr_date, ax):
         """
         :param icons: specifies whether icons to be on graph
         :param instances: specifies whether instances to be plotted
         :param legend: specifies whether legend to be present on graph
         :param names: specifies whether process names to be on graph
         :param num_bars: number of processes to be plotted
+        :param low_date: lower range of timeframe read from
+        :param upr_date: upper range of timeframe read from
         :param ax: matplotlib Axes object to draw plot onto
         """
         self.icons = icons
@@ -38,7 +40,7 @@ class GraphGenerator:
         Adds DataFrame column with process name and sorting by runtime.
         """
         self.db_obj = Reader(r'dbname.sqlite')
-        self.df = self.db_obj.read_rows('2022-01-01')
+        self.df = self.db_obj.read_rows(low_date, upr_date)
         self.df['title'] = [i.split('\\')[-1][:-4] for i in self.df['exe_path']]
         self.df.sort_values(by='runtime', ascending=False, inplace=True)
 
