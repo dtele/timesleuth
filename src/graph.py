@@ -29,7 +29,7 @@ class GraphGenerator:
         self.names = names
         self.ax = ax
 
-        self.colors = 'mako'
+        self.colors = 'flare'
         self.xcoord = -37 if icons and self.names else -27
         self.path_icon = {}
         self.strip_ax = ''
