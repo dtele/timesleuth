@@ -66,15 +66,15 @@ class Reader:
 
         return process
 
-    def read_rows(self, low_date: datetime.date, upr_date: datetime.date) -> pd.DataFrame:
+    def read_rows(self, date_start: datetime.date, date_end: datetime.date) -> pd.DataFrame:
         """
         Reads data from the database.
 
-        :param low_date: lower range of timeframe to read entries from
-        :param upr_date: upper range of timeframe to read entries from
+        :param date_start: lower range of timeframe to read entries from
+        :param date_end: upper range of timeframe to read entries from
         :returns: pandas dataframe object of data converted from sql table
         """
-        self.cursor.execute(f"select * from activity where process_start between '{low_date}' and '{upr_date}'")
+        self.cursor.execute(f'select * from activity where process_start between "{date_start}" and "{date_end + " 23:59:59.997"}"')
         output = [Reader.to_process_details(i) for i in self.cursor.fetchall()]
 
         self.db.commit()
@@ -91,5 +91,5 @@ class Reader:
                  output_dir[i.exe_path].total_seconds() / 60] for i in output]
 
         df = pd.DataFrame(data, columns=['exe_path', 'instance_time', 'runtime'])
-        df = df.astype({'runtime':'float32', 'instance_time':'float32'})
+        df = df.astype({'runtime': 'float32', 'instance_time': 'float32'})
         return df
