@@ -33,7 +33,9 @@ class ProcessDetails:
         :param other: the other object
         :returns: boolean value of the check
         """
-        return (self.title, self.exe_path) == (other.title, other.exe_path)
+        # keep for later use
+        # return (self.title, self.exe_path) == (other.title, other.exe_path)
+        return self.exe_path == other.exe_path
 
     def __repr__(self) -> str:
         """
