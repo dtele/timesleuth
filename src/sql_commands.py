@@ -74,7 +74,7 @@ class Reader:
         :param upr_date: upper range of timeframe to read entries from
         :returns: pandas dataframe object of data converted from sql table
         """
-        self.cursor.execute(f"select title, exe_path, process_start, process_end from activity where process_start between '{low_date}' and '{upr_date}'")
+        self.cursor.execute(f"select * from activity where process_start between '{low_date}' and '{upr_date}'")
         output = [Reader.to_process_details(i) for i in self.cursor.fetchall()]
 
         self.db.commit()
