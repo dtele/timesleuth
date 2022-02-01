@@ -11,8 +11,8 @@ class GraphGenerator:
     """
     A class to handle generation of the graph.
     """
-    
-    def __init__(self, icons : bool, instances : bool, legend : bool, names : bool, num_bars : int, low_date, upr_date, ax):
+
+    def __init__(self, icons: bool, instances: bool, legend: bool, names: bool, num_bars: int, low_date: str, upr_date: str, ax):
         """
         :param icons: specifies whether icons to be on graph
         :param instances: specifies whether instances to be plotted
@@ -33,8 +33,7 @@ class GraphGenerator:
         self.xcoord = -37 if icons and self.names else -27
         self.path_icon = {}
         self.strip_ax = ''
-        
-        
+
         """
         Reads the DataFrame object from the database based on a date range.
         Adds DataFrame column with process name and sorting by runtime.
@@ -45,8 +44,7 @@ class GraphGenerator:
         self.df.sort_values(by='runtime', ascending=False, inplace=True)
 
         self.num_bars = min(num_bars, len(self.df['exe_path'].unique()))
-        
-        
+
         """
         Creates icon objects if needed.
         Splitting DataFrame based on number of bars.
@@ -62,15 +60,15 @@ class GraphGenerator:
 
         if self.instances:
             self.add_instances()
-        
-        
+
         """
         Creates the barplot along with graph tick styles.
         Adds legend or names if specified.
         Sets xticklabels and yticklabels colors.
         Adds icons to graph, fails if not specified
         """
-        self.bar_ax = barplot(data=self.df, x='runtime', y='exe_path', hue='title', palette=self.colors, saturation=0.8, dodge=False, ax=self.ax)
+        self.bar_ax = barplot(data=self.df, x='runtime', y='exe_path', hue='title', palette=self.colors, saturation=0.8,
+                              dodge=False, ax=self.ax)
         self.bar_ax.set(xlabel='', ylabel='', yticklabels=[])
         self.bar_ax.xaxis.set_major_formatter(FuncFormatter(self.label_to_hours))
         self.bar_ax.xaxis.set_major_locator(MultipleLocator(min(60, max(1, 15 * (self.df['runtime'].max() // 15)))))
@@ -92,7 +90,6 @@ class GraphGenerator:
         except Exception as e:
             print(e)
 
-            
     def icon_create(self) -> None:
         """
         Creates path and icon object dict along with color palette based on most dominant color.
@@ -112,19 +109,18 @@ class GraphGenerator:
         self.path_icon = {i: j for i, j in list(self.path_icon.items())[:self.num_bars]}
         self.colors = color_palette([i.dominant_color for i in self.path_icon.values()])
 
-        
     def add_instances(self) -> None:
         """
         Adds plots of all instances of the process in the DataFrame to the graph.
         """
-        self.strip_ax = stripplot(data=self.df, x='instance_time', y='exe_path', palette=self.colors, size=6.9, linewidth=1.2, ax=self.ax)
+        self.strip_ax = stripplot(data=self.df, x='instance_time', y='exe_path', palette=self.colors, size=6.9,
+                                  linewidth=1.2, ax=self.ax)
         self.strip_ax.set(xlabel='', xticklabels=[], ylabel='', yticklabels=[])
 
-        
     def offset_image(self, coord, icon, ax_local, xcoord) -> None:
         """
         Adds pil object container of icons extracted to the graph.
-        
+
         :param coord: y-axis position for image
         :param icon: icon object to be added to graph
         :param ax_local: matplotlib Axes to add icons on
@@ -134,15 +130,14 @@ class GraphGenerator:
         img_con = OffsetImage(img_arr)
         img_con.image.axes = ax_local
         con_pos = AnnotationBbox(img_con, (0, coord), xybox=(xcoord, 0), xycoords='data',
-                            boxcoords="offset points", frameon=False, pad=0)
+                                 boxcoords="offset points", frameon=False, pad=0)
         ax_local.add_artist(con_pos)
 
-        
     @staticmethod
     def label_to_hours(label, pos) -> str:
         """
         Formats the runtime to hhmm format for graph xticklabels.
-        
+
         :param label: runtime value of process
         """
         return f'{int(label // 60)}h{int(label % 60)}m'
