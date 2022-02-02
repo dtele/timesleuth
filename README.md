@@ -6,6 +6,8 @@ user interface with a graph.
 
 Made for a school project.
 
+![GUI.png](https://i.postimg.cc/2ydt8f5J/image.png)
+
 ## Installation
 
 Do any one of the following:
@@ -31,5 +33,3 @@ Do any one of the following:
 - [xyltius](https://github.com/xyltius): Data Visualization
 
 Icon made by [Uniconlabs](https://www.flaticon.com/authors/uniconlabs) from www.flaticon.com
-
-![GUI.png](https://i.postimg.cc/2ydt8f5J/image.png)
