@@ -6,7 +6,7 @@ user interface with a graph.
 
 Made for a school project.
 
-![GUI.png](https://i.postimg.cc/2ydt8f5J/image.png)
+![image](https://user-images.githubusercontent.com/72906211/152160819-960f9dbe-0671-4d1d-b2f3-f63f5a29a2f7.png)
 
 ## Installation
 
