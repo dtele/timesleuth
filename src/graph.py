@@ -103,7 +103,7 @@ class GraphGenerator:
                 assert self.path_icon[path].img_pil
             except Exception as e:
                 fail_lst.append(path)
-                print(e, f"\n{path} is not a valid path.")
+                print(e, f'\n{path} is not a valid path.')
                 pass
 
         self.df.drop(self.df[self.df.exe_path.isin(fail_lst)].index, inplace=True)
@@ -131,7 +131,7 @@ class GraphGenerator:
         img_con = OffsetImage(img_arr)
         img_con.image.axes = ax_local
         con_pos = AnnotationBbox(img_con, (0, coord), xybox=(xcoord, 0), xycoords='data',
-                                 boxcoords="offset points", frameon=False, pad=0)
+                                 boxcoords='offset points', frameon=False, pad=0)
         ax_local.add_artist(con_pos)
 
     @staticmethod
