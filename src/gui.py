@@ -1,7 +1,7 @@
 import sys
 import time
 from datetime import datetime, timedelta
-from os import getenv, mkdir
+from os import getenv, getpid, mkdir
 
 from PyQt5.QtCore import QByteArray, QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QIcon, QPalette, QPixmap
@@ -14,6 +14,9 @@ from graph import GraphGenerator
 from qtd_gui import Ui_MainWindow
 from sql_commands import Writer
 from tracker import Tracker
+
+
+own_pid = getpid()
 
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -35,7 +38,7 @@ class StartToggle(QThread):
     def __init__(self, path):
         QThread.__init__(self)
         self.enabled = True
-        self.delay = 10
+        self.delay = 100
         self.writer = Writer(path)
         self.tracker = Tracker(callback_function=self.writer.write)
 
@@ -72,6 +75,8 @@ class GraphManager(QThread):
         self.path = path
         self.canvas = canvas
 
+        self.tracker = Tracker()
+
     def change_states(self, icons, instances, legend, names):
         self.icons = icons
         self.instances = instances
@@ -91,17 +96,20 @@ class GraphManager(QThread):
 
     def run(self):
         while self.enabled:
-            try:
-                GraphGenerator(icons=self.icons, instances=self.instances, legend=self.legend, names=self.names,
-                               num_bars=self.processes_num, date_start=self.date_start, date_end=self.date_end,
-                               path=self.path, ax=self.canvas.axes)
-                self.canvas.draw()
-                self.canvas.axes.clear()
-            except Exception as e:
-                self.canvas.axes.clear()
-                self.canvas.draw()
-                print(f'{e}: Graph generation failed, sqlite file might be empty')
-            time.sleep(self.delay)
+            if self.tracker.get_window().pid == own_pid:
+                try:
+                    GraphGenerator(icons=self.icons, instances=self.instances, legend=self.legend, names=self.names,
+                                   num_bars=self.processes_num, date_start=self.date_start, date_end=self.date_end,
+                                   path=self.path, ax=self.canvas.axes)
+                    self.canvas.draw()
+                    self.canvas.axes.clear()
+                except Exception as e:
+                    self.canvas.axes.clear()
+                    self.canvas.draw()
+                    print(f'{e}: Graph generation failed, sqlite file might be empty')
+                time.sleep(self.delay)
+            else:
+                time.sleep(0.1)
 
     def stop(self):
         self.enabled = False
@@ -139,6 +147,7 @@ class MainWindow(QWidget):
         self.ui.processes_slider.setValue(3)
         self.ui.delay_slider.valueChanged.connect(self.on_change_sliders)
         self.ui.processes_slider.valueChanged.connect(self.on_change_sliders)
+        self.on_change_sliders()
 
         # Checkboxes
         self.checkboxes = [self.ui.icons_checkbox, self.ui.instances_checkbox, self.ui.legend_checkbox, self.ui.names_checkbox]
